@@ -12,6 +12,7 @@ int[] yarn_positions;
 int[] knot_heights;
 
 boolean chev_down = true;
+boolean sym_colors = false;
 
 class KnotSpec {
   int ind;
@@ -39,7 +40,12 @@ void setup() {
   colorMode(HSB);
 
   for (int i = 0; i < num_yarn; i++) {
-    yarn_colors[i] = color(map(i, 0, num_yarn + 1, 0, 255), 255, 255);
+    float hue = map(i, 0, num_yarn, 0, 255);
+    if (sym_colors) {
+      if (i < num_yarn / 2) hue = map(i, 0, num_yarn / 2, 0, 255);
+      else hue = map(i + 1, num_yarn / 2, num_yarn, 255, 0);
+    }
+    yarn_colors[i] = color(hue, 255, 255);
     yarn_positions[i] = int((i + 0.5) * width / (num_yarn));
   }
 
