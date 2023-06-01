@@ -2,7 +2,7 @@ import java.util.LinkedList;
 
 PGraphics braid_img;
 
-int num_yarn = 16;
+int num_yarn = 40;
 int knot_height = 10;
 int knot_width;
 int xoff;
@@ -11,7 +11,10 @@ color[] yarn_colors;
 int[] yarn_positions;
 int[] knot_heights;
 
+boolean future_parity;
+
 boolean chev_down = true;
+boolean flat = true;
 boolean sym_colors = false;
 
 class KnotSpec {
@@ -29,7 +32,7 @@ LinkedList<KnotSpec> queue;
 void setup() {
   frameRate(60);
 
-  size(300, 900);
+  size(600, 900);
 
   yarn_colors = new color[num_yarn];
   yarn_positions = new int[num_yarn];
@@ -77,10 +80,10 @@ void draw() {
   fill(yarn_colors[ind], 100);
   rect(x, knot_heights[ind], knot_width, knot_height);
 
-  if (queue.size() == 0) {
-    println(frameCount);
-    noLoop();
-  }
+  //if (queue.size() == 0) {
+  //  println(frameCount);
+  //  noLoop();
+  //}
 }
 
 int knot_ind(int x) {
@@ -143,6 +146,9 @@ void create_knot(KnotSpec knot) {
 }
 
 void queue_knot(int ind, boolean left) {
+  if (ind == 0) future_parity = false;
+  if (ind == 1) future_parity = true;
+
   queue.add(new KnotSpec(ind, left));
 }
 
@@ -167,11 +173,13 @@ void chevron_up() {
 }
 
 void chevron() {
+  flat = false;
   if (chev_down) chevron_down();
   else chevron_up();
 }
 
 void flip_chevron() {
+  flat = false;
   for(int j = 0; j < num_yarn / 2; j++) {
     if (chev_down) {
       for (int i = num_yarn - 2; i > num_yarn / 2 + j - 1; i--) {
@@ -195,6 +203,40 @@ void flip_chevron() {
   chev_down = !chev_down;
 }
 
+void make_flat() {
+  for(int j = 0; j < num_yarn / 2; j += 2) {
+    if (chev_down) {
+      for (int i = num_yarn - 2; i > num_yarn / 2 + j - 1; i--) {
+        queue_knot(i, false);
+      }
+
+      for (int i = 0; i < num_yarn / 2 - j - 1; i++) {
+        queue_knot(i, true);
+      }
+    } else {
+      for (int i = num_yarn / 2 - 1; i < num_yarn - j - 1; i++) {
+        queue_knot(i, true);
+      }
+
+      for (int i = num_yarn / 2 - 2; i >= j; i--) {
+        queue_knot(i, false);
+      }
+    }
+  }
+
+  flat = true;
+}
+
+void flat_row() {
+  if (!flat) make_flat();
+
+  int offset = future_parity ? 0 : 1;
+
+  for (int i = offset; i < num_yarn - 1; i += 2) {
+    queue_knot(i, future_parity);
+  }
+}
+
 void keyPressed() {
   switch (key) {
     case 'c':
@@ -202,6 +244,9 @@ void keyPressed() {
       break;
     case 'f':
       flip_chevron();
+      break;
+    case 'r':
+      flat_row();
       break;
   }
   loop();
