@@ -195,13 +195,20 @@ void flip_chevron() {
   chev_down = !chev_down;
 }
 
-void mouseClicked() {
-  if (mouseButton == LEFT) {
-    chevron();
-  } else {
-    flip_chevron();
+void keyPressed() {
+  switch (key) {
+    case 'c':
+      chevron();
+      break;
+    case 'f':
+      flip_chevron();
+      break;
   }
   loop();
-  //int ind = knot_ind(mouseX);
-  //queue_knot(ind, mouseButton == LEFT);
+}
+
+void mouseClicked() {
+  int ind = knot_ind(mouseX);
+  queue_knot(ind, mouseButton == LEFT);
+  loop();
 }
