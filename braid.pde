@@ -76,6 +76,11 @@ void draw() {
   noStroke();
   fill(yarn_colors[ind], 100);
   rect(x, knot_heights[ind], knot_width, knot_height);
+
+  if (queue.size() == 0) {
+    println(frameCount);
+    noLoop();
+  }
 }
 
 int knot_ind(int x) {
@@ -114,7 +119,7 @@ void create_knot(KnotSpec knot) {
   braid_img.beginDraw();
   braid_img.noStroke();
   braid_img.fill(knot_col);
-  braid_img.rect(x, knot_heights[ind] + knot_height / 2, knot_width + 10, knot_height);
+  braid_img.rect(x, knot_heights[ind] + knot_height / 2, knot_width * 1.2, knot_height);
 
   knot_heights[ind] += knot_height;
 
@@ -177,11 +182,11 @@ void flip_chevron() {
         queue_knot(i, true);
       }
     } else {
-      for (int i = num_yarn / 2 - 1; i < num_yarn - j - 2; i++) {
+      for (int i = num_yarn / 2 - 1; i < num_yarn - j - 1; i++) {
         queue_knot(i, true);
       }
 
-      for (int i = num_yarn / 2 - 2; i > j; i--) {
+      for (int i = num_yarn / 2 - 2; i >= j; i--) {
         queue_knot(i, false);
       }
     }
@@ -196,6 +201,7 @@ void mouseClicked() {
   } else {
     flip_chevron();
   }
+  loop();
   //int ind = knot_ind(mouseX);
   //queue_knot(ind, mouseButton == LEFT);
 }
