@@ -172,13 +172,48 @@ void chevron_up() {
   }
 }
 
+void make_chevron() {
+  flat = false;
+
+  for(int j = num_yarn / 2 - 1 + (future_parity ? 1 : 0); j >= 0; j -= 2) {
+    if (chev_down) {
+      for (int i = num_yarn - 2 - j; i > num_yarn / 2 - 1; i--) {
+        queue_knot(i, false);
+      }
+
+      for (int i = j; i < num_yarn / 2; i++) {
+        queue_knot(i, true);
+      }
+    } else {
+      for (int i = num_yarn / 2 + j; i < num_yarn - 1; i++) {
+        queue_knot(i, true);
+      }
+
+      for (int i = num_yarn / 2 - 2 - j; i >= 0; i--) {
+        queue_knot(i, false);
+      }
+    }
+  }
+}
+
 void chevron() {
+  if (flat) {
+    make_chevron();
+    return;
+  }
+
   flat = false;
   if (chev_down) chevron_down();
   else chevron_up();
 }
 
 void flip_chevron() {
+  if (flat) {
+    chev_down = !chev_down;
+    make_chevron();
+    return;
+  }
+
   flat = false;
   for(int j = 0; j < num_yarn / 2; j++) {
     if (chev_down) {
@@ -228,7 +263,10 @@ void make_flat() {
 }
 
 void flat_row() {
-  if (!flat) make_flat();
+  if (!flat) {
+    make_flat();
+    return;
+  }
 
   int offset = future_parity ? 0 : 1;
 
