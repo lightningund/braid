@@ -2,8 +2,8 @@ import java.util.LinkedList;
 
 PGraphics braid_img;
 
-int num_yarn = 40;
-int knot_height = 10;
+int num_yarn = 50;
+int knot_height = 1;
 int knot_width;
 int xoff;
 
@@ -15,7 +15,7 @@ boolean future_parity;
 
 boolean chev_down = true;
 boolean flat = true;
-boolean sym_colors = false;
+boolean sym_colors = true;
 
 class KnotSpec {
   int ind;
@@ -30,9 +30,9 @@ class KnotSpec {
 LinkedList<KnotSpec> queue;
 
 void setup() {
-  frameRate(60);
+  frameRate(1000);
 
-  size(600, 900);
+  size(500, 900);
 
   yarn_colors = new color[num_yarn];
   yarn_positions = new int[num_yarn];
@@ -80,10 +80,14 @@ void draw() {
   fill(yarn_colors[ind], 100);
   rect(x, knot_heights[ind], knot_width, knot_height);
 
-  //if (queue.size() == 0) {
+  if (queue.size() == 0) {
+    int choice = (int)random(0, 4);
+    if (choice == 0) many_chevrons();
+    else if (choice == 1) flip_chevron();
+    else many_rows();
   //  println(frameCount);
   //  noLoop();
-  //}
+  }
 }
 
 int knot_ind(int x) {
@@ -207,6 +211,16 @@ void chevron() {
   else chevron_up();
 }
 
+void many_chevrons(int number) {
+  for (int i = 0; i < number; i++) {
+    chevron();
+  }
+}
+
+void many_chevrons() {
+  many_chevrons((int)random(0, num_yarn));
+}
+
 void flip_chevron() {
   if (flat) {
     chev_down = !chev_down;
@@ -273,6 +287,16 @@ void flat_row() {
   for (int i = offset; i < num_yarn - 1; i += 2) {
     queue_knot(i, future_parity);
   }
+}
+
+void many_rows(int number) {
+  for (int i = 0; i < number; i++) {
+    flat_row();
+  }
+}
+
+void many_rows() {
+  many_rows((int)random(0, num_yarn));
 }
 
 void keyPressed() {
